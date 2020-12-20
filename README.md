@@ -26,11 +26,17 @@ OpenLDAP is configured with the defaut system configuration: it must be reconfig
 $ sudo dpkg-reconfigure slapd
 ```
 For the first screen: to the question “omit OpenLDAP server configuration”: select "No".
+
 Next screen; set a FQDN as the base DN: in our case "test.local".
+
 Next screen: set the name of the organization: in our case, base DN is used.
+
 Next screen: set then confirm the password for admin.
+
 Next screen: select OpenLDAP database backend: MDB is recommended type.
-Next screen: to the question “Do you want the database to be removed when slapd is purged?”select “Yes”.
+
+Next screen: to the question “Do you want the database to be removed when slapd is purged?”: select “Yes”.
+
 Next screen: to the question “Move old database?": select “Yes”.
 
 Test the configuration :
