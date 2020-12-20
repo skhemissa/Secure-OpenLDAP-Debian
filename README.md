@@ -9,7 +9,7 @@
 - [ ] Build and configure Read Only slave directory replication
 
 * [Build and configure a basic OpenLDAP server](#build-and-configure-a-basic-openldap-server)
-* [Configure Logging](!configure-logging)
+* [Configure Logging](#configure-logging)
 
 ## Build and configure a basic OpenLDAP server
 According to your security hardening policy, install a fresh debian 10 server then install and configure sudo.
