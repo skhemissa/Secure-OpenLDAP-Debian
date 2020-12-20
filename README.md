@@ -20,7 +20,7 @@ $ sudo apt update && apt upgrade -y
 ```
 Install OpenLDAP
 ```
-$ sudo apt install slapd ldap-utils rsyslog --no-install-recommends -y
+$ sudo apt install slapd ldap-utils rsyslog gnutls-bin --no-install-recommends -y
 ```
 OpenLDAP package configuration screen is automaticaly started: set then confirm the password for admin.
 
