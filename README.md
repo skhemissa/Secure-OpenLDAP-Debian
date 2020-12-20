@@ -1,4 +1,4 @@
-# Secure OpenLDAP Debian
+# Secure OpenLDAP server on Debian 10 Buster
 - [ ] Build and configure the directory server
 - [ ] Configure TLS
 - [ ] Create a Base DN for Users and Groups
