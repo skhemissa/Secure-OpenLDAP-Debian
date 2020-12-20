@@ -77,7 +77,7 @@ $ echo "local4.* /var/log/slapd.log" | sudo tee -a /etc/rsyslog.conf
 ```
 Configure log rotation:
 ```
-$ sudo vim /etc/logrotate.d/slapd
+$ sudo cat /etc/logrotate.d/slapd
 /var/log/slapd.log
 { 
         rotate 10
