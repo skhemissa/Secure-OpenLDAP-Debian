@@ -12,7 +12,7 @@
 * [Configure Logging](!configure-logging)
 
 ## Build and configure a basic OpenLDAP server
-According to your security hardening policy, install a fresh debian 10 server then install and configure sudo. 
+According to your security hardening policy, install a fresh debian 10 server then install and configure sudo.
 
 Don't forget to update your server :
 ```
@@ -22,7 +22,8 @@ Install OpenLDAP
 ```
 $ sudo apt install slapd ldap-utils rsyslog --no-install-recommends -y
 ```
-OpenLDAP package configuration screen is automaticaly started: set then confirm the password for admin
+OpenLDAP package configuration screen is automaticaly started: set then confirm the password for admin.
+
 OpenLDAP is configured with the defaut system configuration: it must be reconfigured:
 ```
 $ sudo dpkg-reconfigure slapd
