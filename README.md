@@ -1,5 +1,6 @@
 # Secure OpenLDAP server on Debian 10 Buster
 - [X] Build and configure a basic OpenLDAP server
+- [ ] Configure OpenLDAP logging
 - [ ] Configure TLS (LDAPs) >> in progress
 - [ ] Create a Base DN for Users and Groups
 - [ ] Disable Anonymous access
