@@ -1,1 +1,1 @@
-# Secure-OpenLDAP-Debian
+# Secure OpenLDAP Debian
