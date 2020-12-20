@@ -7,7 +7,7 @@
 - [ ] Implement self service portal based on [Self Service Password](https://ltb-project.org/documentation/self-service-password)
 - [ ] Build and configure Read Only slave directory replication
 
-[Build and configure a basic OpenLDAP server](#build-and-configure-a-basic-openldap-server)
+* [Build and configure a basic OpenLDAP server](#build-and-configure-a-basic-openldap-server)
 
 ## Build and configure a basic OpenLDAP server
 According to your security hardening policy, install a fresh debian 10 server then install and configure sudo. 
