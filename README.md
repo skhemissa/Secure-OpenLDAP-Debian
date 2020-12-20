@@ -1,6 +1,6 @@
 # Secure OpenLDAP server on Debian 10 Buster
 - [X] Build and configure a basic OpenLDAP server
-- [ ] Configure OpenLDAP logging
+- [X] Configure logging
 - [ ] Configure TLS (LDAPs) >> in progress
 - [ ] Create a Base DN for Users and Groups
 - [ ] Disable Anonymous access
@@ -9,6 +9,7 @@
 - [ ] Build and configure Read Only slave directory replication
 
 * [Build and configure a basic OpenLDAP server](#build-and-configure-a-basic-openldap-server)
+* [Configure Logging](!configure-logging)
 
 ## Build and configure a basic OpenLDAP server
 According to your security hardening policy, install a fresh debian 10 server then install and configure sudo. 
@@ -56,4 +57,41 @@ objectClass: organizationalRole
 cn: admin
 description: LDAP administrator
 ....
+```
+
+## Configure Logging
+
+Configure OpenLDAP
+```
+$ sudo ldapmodify -Y external -H ldapi:/// << OEF
+dn: cn=config
+changeType: modify
+replace: olcLogLevel
+olcLogLevel: stats
+OEF
+```
+Update Rsyslog configuration:
+```
+$ echo "local4.* /var/log/slapd.log" | sudo tee -a /etc/rsyslog.conf
+```
+Configure log rotation:
+```
+$ sudo vim /etc/logrotate.d/slapd
+/var/log/slapd.log
+{ 
+        rotate 10
+        daily
+        size=50M
+        missingok
+        notifempty
+        delaycompress
+        compress
+        postrotate
+                /usr/lib/rsyslog/rsyslog-rotate
+        endscript
+}
+```
+Reboot the server for activating logging
+```
+$ sudo /sbin/reboot
 ```
