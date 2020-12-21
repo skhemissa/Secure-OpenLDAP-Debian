@@ -1,9 +1,9 @@
 # Secure OpenLDAP server on Debian 10 Buster
 - [X] Build and configure a basic OpenLDAP server
 - [X] Configure logging
-- [ ] Configure TLS (LDAPs) >> in progress
-- [ ] Disable Anonymous access
-- [ ] Create a Base DN for Users and Groups
+- [X] Configure TLS (LDAPs)
+- [X] Disable Anonymous access
+- [ ] Create a Base DN for Users and Groups  >> in progress
 - [ ] Set ACL, including Read Only user for LDAP binding
 - [ ] Implement self service portal based on [Self Service Password](https://ltb-project.org/documentation/self-service-password)
 - [ ] Build and configure Read Only slave directory replication
@@ -11,6 +11,7 @@
 * [Build and configure a basic OpenLDAP server](#build-and-configure-a-basic-openldap-server)
 * [Configure Logging](#configure-logging)
 * [Configure TLS encryption](#configure-tls-encryption)
+* [Disable Anonymous access](#disable-anonymous-access)
 
 ## Build and configure a basic OpenLDAP server
 According to your security hardening policy, install a fresh debian 10 server then install and configure sudo.
@@ -181,4 +182,24 @@ add: olcSecurity
 olcSecurity: tls=1
 
 $  sudo ldapmodify -H ldapi:// -Y EXTERNAL -f forcetls.ldif
+```
+## Disable Anonymous access
+```
+$ cat disable-anon.ldif
+dn: cn=config
+changetype: modify
+add: olcDisallows
+olcDisallows: bind_anon
+
+dn: cn=config
+changetype: modify
+add: olcRequires
+olcRequires: authc
+
+dn: olcDatabase={-1}frontend,cn=config
+changetype: modify
+add: olcRequires
+olcRequires: authc
+
+$ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f disable-anon.ldif
 ```
