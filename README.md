@@ -151,8 +151,8 @@ SLAPD_SERVICES="ldap:/// ldaps:///  ldapi:///"
 ```
 Then add the following lines
 ```
-TLS_CACERTDIR="/etc/openldap/tls/"                                                                                                                                                                                                          
-TLS_CACERT="/etc/openldap/ca/ca-cert.pem" 
+TLS_CACERTDIR="/etc/openldap/tls/"
+TLS_CACERT="/etc/openldap/ca/ca-cert.pem"
 ```
 Configure certificates:
 ```
@@ -223,7 +223,6 @@ Create first user
 Generate a password for the user to create
 ```
 $ slappasswd
-slappasswd
 New password:
 Re-enter new password:
 {SSHA}encrypted_password
