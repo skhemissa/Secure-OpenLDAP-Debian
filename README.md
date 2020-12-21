@@ -10,11 +10,12 @@
 
 * [Build and configure a basic OpenLDAP server](#build-and-configure-a-basic-openldap-server)
 * [Configure Logging](#configure-logging)
+* [Configure TLS encryption](#configure-tls-encryption)
 
 ## Build and configure a basic OpenLDAP server
 According to your security hardening policy, install a fresh debian 10 server then install and configure sudo.
 
-Don't forget to update your server :
+Don't forget to update your server:
 ```
 $ sudo apt update && apt upgrade -y
 ```
@@ -42,7 +43,7 @@ Next screen: to the question “Do you want the database to be removed when slap
 
 Next screen: to the question “Move old database?": select “Yes”.
 
-Test the configuration :
+Test the configuration:
 ```
 $ sudo slapcat
 dn: dc=test,dc=local
@@ -62,7 +63,7 @@ description: LDAP administrator
 
 ## Configure Logging
 
-Configure OpenLDAP
+Configure OpenLDAP:
 ```
 $ sudo ldapmodify -Y external -H ldapi:/// << OEF
 dn: cn=config
@@ -92,7 +93,92 @@ $ sudo cat /etc/logrotate.d/slapd
         endscript
 }
 ```
-Reboot the server for activating logging
+Reboot the server for activating logging:
 ```
 $ sudo /sbin/reboot
+```
+## Configure TLS encryption
+This configuration activate LDAP with StartTLS extension (port 389) and LDAPs (port 636)
+
+Create directories to store certificates:
+```
+$ sudo mkdir -p /etc/openldap/tls/
+$ sudo mkdir -p /etc/openldap/ca/
+```
+
+Create the CA key file:
+```
+$ sudo certtool --generate-privkey --sec-param high --outfile /etc/openldap/ca/ca.key
+```
+
+Create the CA certificate file:
+```
+$ cat /etc/openldap/ca/ca.info
+cn=CA Secure OpenLDAP 
+ca
+cert_signing_key
+
+$ sudo certtool --generate-self-signed --load-privkey /etc/openldap/ca/ca.key --template /etc/openldap/ca/ca.info --outfile /etc/openldap/ca/ca-cert.pem
+```
+
+Create the OpenLDAP server key file:
+```
+$ sudo certtool --generate-privkey --sec-param high --outfile /etc/openldap/tls/ldap.test.local.key
+```
+Create the OpenLDAP server certificate file:
+```
+$ cat /etc/openldap/tls/ldap.test.local.info
+organization = Test
+cn = ldap.test.local
+tls_www_server
+encryption_key
+signing_key
+expiration_days = 365
+
+$ sudo certtool --generate-certificate --load-privkey /etc/openldap/tls/ldap.test.local.key --load-ca-certificate /etc/openldap/ca/ca-cert.pem --load-ca-privkey /etc/openldap/ca/ca.key --template /etc/openldap/tls/ldap.test.local.info --outfile /etc/openldap/tls/ldap.test.local.pem
+```
+Activate TLS:
+
+In /etc/default/slapd
+
+replace the following line 
+
+SLAPD_SERVICES="ldap:/// ldapi:///"
+
+with
+
+SLAPD_SERVICES="ldap:/// ldaps:///  ldapi:///"
+
+Then add the following lines
+
+TLS_CACERTDIR="/etc/openldap/tls/"                                                                                                                                                                                                          
+
+TLS_CACERT="/etc/openldap/ca/ca-cert.pem" 
+
+Configure certificates:
+```
+$ cat tls.ldif
+dn: cn=config
+changetype: modify
+add: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/tls/ldap.test.local.pem
+
+add: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/tls/ldap.test.local.key
+
+add: olcTLSCACertificateFile
+olcTLSCACertificateFile: /etc/openldap/ca/ca-cert.pem
+
+$ sudo ldapmodify -Y EXTERNAL -H ldapi:// -f tls.ldif
+$ sudo systemctl restart slapd
+```
+Force TLS only:
+```
+$ cat forcetls.ldif
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcSecurity
+olcSecurity: tls=1
+
+$  sudo ldapmodify -H ldapi:// -Y EXTERNAL -f forcetls.ldif
 ```
