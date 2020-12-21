@@ -3,7 +3,7 @@
 - [X] Configure logging
 - [X] Configure TLS (LDAPs)
 - [X] Disable Anonymous access
-- [ ] Create a Base DN for Users and Groups  >> in progress
+- [X] Create a Base DN for Users and Groups
 - [ ] Set ACL, including Read Only user for LDAP binding
 - [ ] Implement self service portal based on [Self Service Password](https://ltb-project.org/documentation/self-service-password)
 - [ ] Build and configure Read Only slave directory replication
@@ -12,6 +12,7 @@
 * [Configure Logging](#configure-logging)
 * [Configure TLS encryption](#configure-tls-encryption)
 * [Disable Anonymous access](#disable-anonymous-access)
+* [Create base DN for users and groups](#create-base-dn-for-users-and-groups)
 
 ## Build and configure a basic OpenLDAP server
 According to your security hardening policy, install a fresh debian 10 server then install and configure sudo.
@@ -140,22 +141,19 @@ $ sudo certtool --generate-certificate --load-privkey /etc/openldap/tls/ldap.tes
 ```
 Activate TLS:
 
-In /etc/default/slapd
-
-replace the following line 
-
+In /etc/default/slapd replace the following line 
+```
 SLAPD_SERVICES="ldap:/// ldapi:///"
-
+```
 with
-
+```
 SLAPD_SERVICES="ldap:/// ldaps:///  ldapi:///"
-
+```
 Then add the following lines
-
+```
 TLS_CACERTDIR="/etc/openldap/tls/"                                                                                                                                                                                                          
-
 TLS_CACERT="/etc/openldap/ca/ca-cert.pem" 
-
+```
 Configure certificates:
 ```
 $ cat tls.ldif
@@ -206,4 +204,55 @@ add: olcRequires
 olcRequires: authc
 
 $ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f disable-anon.ldif
+```
+## Create base DN for users and groups
+```
+$ cat basedn.ldif
+dn: ou=people,dc=test,dc=local                                                                                                                                                                                                                
+objectClass: organizationalUnit                                                                                                                                                                                                               
+ou: people                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                              
+dn: ou=groups,dc=test,dc=local                                                                                                                                                                                                                
+objectClass: organizationalUnit                                                                                                                                                                                                               
+ou: groups
+
+$ sudo ldapadd -x -H ldaps://localhost -D cn=admin,dc=test,dc=local -W -f basedn.ldif
+```
+Create first user
+
+Generate a password for the user to create
+```
+$ slappasswd
+slappasswd
+New password:
+Re-enter new password:
+{SSHA}encrypted_password
+
+$ cat usertest.ldif
+dn: uid=usertest,ou=people,dc=test,dc=local
+objectClass: inetOrgPerson
+objectClass: shadowAccount
+cn: last_name
+sn: first_name
+userPassword: {SSHA}{SSHA}encrypted_password
+
+$ sudo ldapadd -x -H ldaps://localhost -D cn=admin,dc=test,dc=local -W -f usertest.ldif
+```
+Create a new group:
+```
+$ cat groups.ldif
+dn: cn=ldap-users,ou=groups,dc=test,dc=local
+objectClass: top
+objectClass: groupOfNames
+member: uid=usertest,ou=people,dc=test,dc=local
+
+$ sudo ldapadd -x -H ldaps://localhost -D cn=admin,dc=test,dc=local -W -f groups.ldif
+```
+ldif file for adding another user to existing group
+```
+$ cat user_group.ldif
+dn: cn=webapp,ou=groups,dc=test,dc=local
+changetype: modify
+add: member
+member: uid=other_user,ou=people,dc=test,dc=local
 ```
