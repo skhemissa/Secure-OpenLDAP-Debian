@@ -183,6 +183,10 @@ olcSecurity: tls=1
 
 $  sudo ldapmodify -H ldapi:// -Y EXTERNAL -f forcetls.ldif
 ```
+Configure the LDAP client to ignore self signed certificates by adding the following line in /etc/ldap/ldap.conf
+```
+TLS_REQCERT never
+```
 ## Disable Anonymous access
 ```
 $ cat disable-anon.ldif
