@@ -215,12 +215,12 @@ $ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f disable-anon.ldif
 ## Create base DN for users and groups
 ```
 $ cat basedn.ldif
-dn: ou=people,dc=test,dc=local                                                                                                                                                                                                                
-objectClass: organizationalUnit                                                                                                                                                                                                               
-ou: people                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                              
-dn: ou=groups,dc=test,dc=local                                                                                                                                                                                                                
-objectClass: organizationalUnit                                                                                                                                                                                                               
+dn: ou=people,dc=test,dc=local
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=test,dc=local
+objectClass: organizationalUnit
 ou: groups
 
 $ sudo ldapadd -x -H ldaps://localhost -D cn=admin,dc=test,dc=local -W -f basedn.ldif
