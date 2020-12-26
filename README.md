@@ -80,7 +80,7 @@ $ echo "local4.* /var/log/slapd.log" | sudo tee -a /etc/rsyslog.conf
 ```
 Configure log rotation:
 ```
-$ sudo cat /etc/logrotate.d/slapd
+$ sudo vi /etc/logrotate.d/slapd
 /var/log/slapd.log
 { 
         rotate 10
@@ -115,7 +115,7 @@ $ sudo certtool --generate-privkey --sec-param high --outfile /etc/openldap/ca/c
 
 Create the CA certificate file:
 ```
-$ cat /etc/openldap/ca/ca.info
+$ sudo vi /etc/openldap/ca/ca.info
 cn=CA Secure OpenLDAP 
 ca
 cert_signing_key
@@ -129,7 +129,7 @@ $ sudo certtool --generate-privkey --sec-param high --outfile /etc/openldap/tls/
 ```
 Create the OpenLDAP server certificate file:
 ```
-$ cat /etc/openldap/tls/ldap.test.local.info
+$ sudo vi /etc/openldap/tls/ldap.test.local.info
 organization = Test
 cn = ldap.test.local
 tls_www_server
@@ -141,14 +141,20 @@ $ sudo certtool --generate-certificate --load-privkey /etc/openldap/tls/ldap.tes
 ```
 Make certificate readable by users
 ```
-$ sudo chmod 640 /etc/openldap/tls/ldap.test.local.pem
-$ sudo chmod 640 /etc/openldap/tls/ldap.test.local.key
-$ sudo chmod 644 /etc/openldap/ca/ca-cert.pem
+$ sudo chmod 640 /etc/openldap/tls/ldap.test.local.pem && \
+ sudo chmod 640 /etc/openldap/tls/ldap.test.local.key && \
+ sudo chmod 644 /etc/openldap/ca/ca-cert.pem && \
+ sudo chgrp openldap /etc/openldap/tls/ldap.test.local.pem && \
+ sudo chgrp openldap /etc/openldap/tls/ldap.test.local.key && \
+ sudo chgrp openldap /etc/openldap/ca/ca-cert.pem
 ```
 
 Activate TLS:
 
-In /etc/default/slapd replace the following line 
+```
+$ sudo vi /etc/default/slapd
+```
+Replace the following line 
 ```
 SLAPD_SERVICES="ldap:/// ldapi:///"
 ```
@@ -163,7 +169,7 @@ TLS_CACERT="/etc/openldap/ca/ca-cert.pem"
 ```
 Configure certificates:
 ```
-$ cat tls.ldif
+$ vi tls.ldif
 dn: cn=config
 changetype: modify
 add: olcTLSCertificateKeyFile
@@ -181,7 +187,7 @@ $ sudo systemctl restart slapd
 
 Force TLS only:
 ```
-$ cat forcetls.ldif
+$ vi forcetls.ldif
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcSecurity
@@ -195,7 +201,7 @@ TLS_REQCERT never
 ```
 ## Disable Anonymous access
 ```
-$ cat disable-anon.ldif
+$ vi disable-anon.ldif
 dn: cn=config
 changetype: modify
 add: olcDisallows
@@ -215,7 +221,7 @@ $ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f disable-anon.ldif
 ```
 ## Create base DN for users and groups
 ```
-$ cat basedn.ldif
+$ vi basedn.ldif
 dn: ou=people,dc=test,dc=local
 objectClass: organizationalUnit
 ou: people
@@ -235,7 +241,7 @@ New password:
 Re-enter new password:
 {SSHA}encrypted_password
 
-$ cat usertest.ldif
+$ vi usertest.ldif
 dn: uid=usertest,ou=people,dc=test,dc=local
 objectClass: inetOrgPerson
 objectClass: shadowAccount
@@ -247,7 +253,7 @@ $ sudo ldapadd -x -H ldaps://localhost -D cn=admin,dc=test,dc=local -W -f userte
 ```
 Create a new group:
 ```
-$ cat groups.ldif
+$ vi groups.ldif
 dn: cn=ldap-users,ou=groups,dc=test,dc=local
 objectClass: top
 objectClass: groupOfNames
@@ -257,7 +263,7 @@ $ sudo ldapadd -x -H ldaps://localhost -D cn=admin,dc=test,dc=local -W -f groups
 ```
 ldif file for adding another user to existing group
 ```
-$ cat user_group.ldif
+$ vi user_group.ldif
 dn: cn=webapp,ou=groups,dc=test,dc=local
 changetype: modify
 add: member
