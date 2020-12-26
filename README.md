@@ -141,8 +141,9 @@ $ sudo certtool --generate-certificate --load-privkey /etc/openldap/tls/ldap.tes
 ```
 Make certificate readable by users
 ```
-$ sudo chmod 644 /etc/openldap/tls/ldap.test.local.pem
-$ sudo chmod 644 /etc/openldap/tls/ldap.test.local.key
+$ sudo chmod 640 /etc/openldap/tls/ldap.test.local.pem
+$ sudo chmod 640 /etc/openldap/tls/ldap.test.local.key
+$ sudo chmod 644 /etc/openldap/ca/ca-cert.pem
 ```
 
 Activate TLS:
@@ -167,10 +168,10 @@ dn: cn=config
 changetype: modify
 add: olcTLSCertificateKeyFile
 olcTLSCertificateKeyFile: /etc/openldap/tls/ldap.test.local.key
-
+-
 add: olcTLSCertificateFile
 olcTLSCertificateFile: /etc/openldap/tls/ldap.test.local.pem
-
+-
 add: olcTLSCACertificateFile
 olcTLSCACertificateFile: /etc/openldap/ca/ca-cert.pem
 
