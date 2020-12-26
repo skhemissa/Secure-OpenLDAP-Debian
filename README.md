@@ -139,6 +139,12 @@ expiration_days = 365
 
 $ sudo certtool --generate-certificate --load-privkey /etc/openldap/tls/ldap.test.local.key --load-ca-certificate /etc/openldap/ca/ca-cert.pem --load-ca-privkey /etc/openldap/ca/ca.key --template /etc/openldap/tls/ldap.test.local.info --outfile /etc/openldap/tls/ldap.test.local.pem
 ```
+Make certificate readable by users
+```
+$ sudo chmod 644 /etc/openldap/tls/ldap.test.local.pem
+$ sudo chmod 644 /etc/openldap/tls/ldap.test.local.key
+```
+
 Activate TLS:
 
 In /etc/default/slapd replace the following line 
@@ -159,11 +165,11 @@ Configure certificates:
 $ cat tls.ldif
 dn: cn=config
 changetype: modify
-add: olcTLSCertificateFile
-olcTLSCertificateFile: /etc/openldap/tls/ldap.test.local.pem
-
 add: olcTLSCertificateKeyFile
 olcTLSCertificateKeyFile: /etc/openldap/tls/ldap.test.local.key
+
+add: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/tls/ldap.test.local.pem
 
 add: olcTLSCACertificateFile
 olcTLSCACertificateFile: /etc/openldap/ca/ca-cert.pem
@@ -171,6 +177,7 @@ olcTLSCACertificateFile: /etc/openldap/ca/ca-cert.pem
 $ sudo ldapmodify -Y EXTERNAL -H ldapi:// -f tls.ldif
 $ sudo systemctl restart slapd
 ```
+
 Force TLS only:
 ```
 $ cat forcetls.ldif
