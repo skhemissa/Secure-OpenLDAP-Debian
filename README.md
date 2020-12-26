@@ -19,7 +19,7 @@ According to your security hardening policy, install a fresh debian 10 server th
 
 Don't forget to update your server:
 ```
-$ sudo apt update && apt upgrade -y
+$ sudo apt update && sudo apt upgrade -y
 ```
 Install OpenLDAP
 ```
