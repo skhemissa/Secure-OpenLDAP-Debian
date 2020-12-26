@@ -230,7 +230,7 @@ Create first user
 
 Generate a password for the user to create
 ```
-$ slappasswd
+$ /sbin/slappasswd
 New password:
 Re-enter new password:
 {SSHA}encrypted_password
